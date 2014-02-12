@@ -30,11 +30,7 @@ Base.prototype.getTagName = function(tag){
 Base.prototype.css = function(attr, value){
   for(var i=0;i<this.elements.length ;i++){
     if(arguments.length == 1){
-      if(typeof window.getComputedStyle != 'undefined'){  // w3c
-        return window.getComputedStyle(this.elements[i],null)[attr]
-      }else if(typeof this.elements[i].currentStyle != "undefined"){ //IE
-        return this.elements[i].currentStyle[attr]
-      }
+      return getStyle(element, attr);
     }
     this.elements[i].style[attr] = value;
   }
@@ -129,8 +125,8 @@ Base.prototype.hide = function () {
 
 //set center
 Base.prototype.center = function(width, height){
-  var top = (document.documentElement.clientHeight-height)/2;
-  var left = (document.documentElement.clientWidth-width)/2;
+  var top = (getInner().height - height)/2;
+  var left = (getInner().width - width)/2;
   for (var i = 0; i < this.elements.length; i ++) {
     this.elements[i].style.top = top + "px";
     this.elements[i].style.left = left + "px";
@@ -141,5 +137,23 @@ Base.prototype.center = function(width, height){
 //set resize window
 Base.prototype.resize = function(fn){
   window.onresize = fn;
+  return this;
+}
+
+Base.prototype.lock = function(){
+  var width = getInner().width
+  var height = getInner().height;
+  for (var i = 0; i < this.elements.length; i ++) {
+    this.elements[i].style.width = width + "px";
+    this.elements[i].style.height = height + "px";
+    this.elements[i].style.display = "block";
+  }
+  return this;
+}
+
+Base.prototype.unlock = function(){
+  for (var i = 0; i < this.elements.length; i ++) {
+    this.elements[i].style.display = "none";
+  }
   return this;
 }

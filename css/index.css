@@ -73,7 +73,9 @@ body{
   height: 200px;
   border: 1px solid #ccc;
   position: absolute;
+  background-color: #fff;
   display: none;
+  z-index: 9999;
 }
 
 #login h2{
@@ -122,4 +124,14 @@ body{
 #login .other{
   float: right;
   margin: 15px 10px;
+}
+
+#screen{
+  background: #000;
+  opacity:0.3;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  display: none;
+  z-index: 9998
 }

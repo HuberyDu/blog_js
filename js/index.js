@@ -6,10 +6,22 @@ window.onload = function () {
   });
 
   var login = $().getId("login")
-  login.center(300,200).resize(function(){
+  login.center(300,200);
+
+  $().resize(function(){
     login.center(300,200)
-  });
+    if(login.css("display") == "block"){
+      $().getId("screen").lock();
+    }
+  })
+
   $().getClass("close").click(function(){
   	login.css("display", "none");
+  	$().getId("screen").unlock();
+  })
+
+  $().getClass("login").click(function(){
+  	login.css("display", "block");
+  	$().getId("screen").lock();
   })
 };
