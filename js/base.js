@@ -111,16 +111,35 @@ Base.prototype.hover = function (over, out) {
   return this;
 };
 
-Base.prototype.show = function(){
-  for(var i=0; i<this.elements.length;i++){
-    this.elements[i].style.display = "block";
+//设置显示
+Base.prototype.show = function () {
+  for (var i = 0; i < this.elements.length; i ++) {
+    this.elements[i].style.display = 'block';
   }
-  return this
+  return this;
 }
 
-Base.prototype.hide = function(){
-  for(var i=0; i<this.elements.length;i++){
-    this.elements[i].style.display = "none";
+//设置隐藏
+Base.prototype.hide = function () {
+  for (var i = 0; i < this.elements.length; i ++) {
+    this.elements[i].style.display = 'none';
   }
-  return this
+  return this;
+}
+
+//set center
+Base.prototype.center = function(width, height){
+  var top = (document.documentElement.clientHeight-height)/2;
+  var left = (document.documentElement.clientWidth-width)/2;
+  for (var i = 0; i < this.elements.length; i ++) {
+    this.elements[i].style.top = top + "px";
+    this.elements[i].style.left = left + "px";
+  }
+  return this;
+}
+
+//set resize window
+Base.prototype.resize = function(fn){
+  window.onresize = fn;
+  return this;
 }
