@@ -20,8 +20,8 @@ Base.prototype.getName = function(name){
 }
 
 Base.prototype.getTagName = function(tag){
-  tags = document.getElementsByTagName(name);
-  for(var i=0; i<name.length; i++){
+  tags = document.getElementsByTagName(tag);
+  for(var i=0; i<tags.length; i++){
     this.elements.push(tags[i]);
   }
   return this;
@@ -66,7 +66,7 @@ Base.prototype.getElement = function(num){
 
 Base.prototype.click = function(ftn){
   for(var i=0; i<this.elements.length;i++){
-    this.elements[i].onclick = ftn;
+    addEvent(this.elements[i],"click",ftn)
   }
   return this;
 }
@@ -101,8 +101,8 @@ Base.prototype.addRule = function(num,selectorText, cssText, position){
 
 Base.prototype.hover = function (over, out) {
   for (var i = 0; i < this.elements.length; i ++) {
-    this.elements[i].onmouseover = over;
-    this.elements[i].onmouseout = out;
+    addEvent(this.elements[i], 'mouseover', over);
+    addEvent(this.elements[i], 'mouseout', out);
   }
   return this;
 };
@@ -134,11 +134,23 @@ Base.prototype.center = function(width, height){
   return this;
 }
 
-//set resize window
-Base.prototype.resize = function(fn){
-  window.onresize = fn;
+//触发浏览器窗口事件
+Base.prototype.resize = function (fn) {
+  for (var i = 0; i < this.elements.length; i ++) {
+    var element = this.elements[i];
+    addEvent(window, 'resize', function () {
+      fn();
+      if (element.offsetLeft > getInner().width - element.offsetWidth) {
+        element.style.left = getInner().width - element.offsetWidth + 'px';
+      }
+      if (element.offsetTop > getInner().height - element.offsetHeight) {
+        element.style.top = getInner().height - element.offsetHeight + 'px';
+      }
+    });
+  }
   return this;
 }
+
 
 Base.prototype.lock = function(){
   var width = getInner().width
@@ -154,6 +166,60 @@ Base.prototype.lock = function(){
 Base.prototype.unlock = function(){
   for (var i = 0; i < this.elements.length; i ++) {
     this.elements[i].style.display = "none";
+    document.documentElement.style.overflow = 'auto';
+    removeEvent(window, 'scroll', scrollTop);
+  }
+  return this;
+}
+
+//拖拽功能
+Base.prototype.drag = function () {
+  for (var i = 0; i < this.elements.length; i ++) {
+    addEvent(this.elements[i], 'mousedown', function (e) {
+      var _this = this;
+      var diffX = e.clientX - _this.offsetLeft;
+      var diffY = e.clientY - _this.offsetTop;
+      
+      if (e.target.tagName == 'H2') {
+        addEvent(document, 'mousemove', move);
+        addEvent(document, 'mouseup', up);
+      } else {
+        removeEvent(document, 'mousemove', move);
+        removeEvent(document, 'mouseup', up);
+      }
+      
+      function move(e) {
+        var left = e.clientX - diffX;
+        var top = e.clientY - diffY;
+        
+        if (left < 0) {
+          left = 0;
+        } else if (left > getInner().width - _this.offsetWidth) {
+          left = getInner().width - _this.offsetWidth;
+        }
+        
+        if (top < 0) {
+          top = 0;
+        } else if (top > getInner().height - _this.offsetHeight) {
+          top = getInner().height - _this.offsetHeight;
+        }
+        
+        _this.style.left = left + 'px';
+        _this.style.top = top + 'px';
+        
+        if (typeof _this.setCapture != 'undefined') {
+          _this.setCapture();
+        } 
+      }
+      
+      function up() {
+        removeEvent(document, 'mousemove', move);
+        removeEvent(document, 'mouseup', up);
+        if (typeof _this.releaseCapture != 'undefined') {
+          _this.releaseCapture();
+        }
+      }
+    });
   }
   return this;
 }

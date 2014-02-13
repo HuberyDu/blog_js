@@ -24,4 +24,6 @@ window.onload = function () {
   	login.css("display", "block");
   	$().getId("screen").lock();
   })
+  login.drag()
+
 };
