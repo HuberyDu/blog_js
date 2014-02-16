@@ -1,28 +1,30 @@
 window.onload = function () {
-  $().getClass('member').hover(function () {
-    $().getTagName('ul').show();
+  $('.member').hover(function () {
+    $('ul').show();
   }, function () {
-    $().getTagName('ul').hide();
+    $('ul').hide();
   });
 
-  var login = $().getId("login")
+  var login = $("#login");
   login.center(300,200);
-
   $().resize(function(){
-    login.center(300,200)
-    if(login.css("display") == "block"){
-      $().getId("screen").lock();
+    login.center(300,200);
+    if(login.css(display) == "block"){
+      $("#screen").lock();
     }
   })
 
-  $().getClass("close").click(function(){
-  	login.css("display", "none");
-  	$().getId("screen").unlock();
+  $(".close").click(function(){
+    login.css("display", "none");
+    $("#screen").unlock();
   })
 
-  $().getClass("login").click(function(){
-  	login.css("display", "block");
-  	$().getId("screen").lock();
+  $(".login").click(function(){
+    login.css("display", "block");
+    $("#screen").lock();
   })
-  login.drag([$().getTagName('h2').getElement(0)])
+
+  login.drag([$('h2').getElement(0)])
+
+  $("h2 span").css("color", "red")
 };
