@@ -281,3 +281,19 @@ Base.prototype.unlock = function(){
 Base.prototype.extend = function(name, ftn){
   Base.prototype[name] = ftn;
 }
+
+Base.prototype.ready = function(fn){
+  addDomLoaded(fn);
+}
+
+Base.prototype.ge = function(num){
+  return this.elements[num];
+}
+
+Base.prototype.first = function(){
+  return this.elements[0];
+}
+
+Base.prototype.last = function(){
+  return this.elements[this.elements.length - 1];
+}
