@@ -70,9 +70,9 @@ function getInner(){
 function getStyle(element, attr) {
   var value;
   if (typeof window.getComputedStyle != 'undefined') {//W3C
-    value = parseInt(window.getComputedStyle(element, null)[attr]);
+    value = parseFloat(window.getComputedStyle(element, null)[attr]);
   } else if (typeof element.currentStyle != 'undeinfed') {//IE
-    value = parseInt(element.currentStyle[attr]);
+    value = parseFloat(element.currentStyle[attr]);
   }
   return value;
 }

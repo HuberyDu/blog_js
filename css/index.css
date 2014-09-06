@@ -142,6 +142,7 @@ body{
   position: absolute;
   height: 50px;
   left: 100px;
+  opacity: 0.3;
 }
 #box-parent{
   background-color: gray;

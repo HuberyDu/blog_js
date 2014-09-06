@@ -30,9 +30,9 @@ window.onload = function () {
 
   $("#boxinput").click(function(){
     $("#box").animate({
-      attr  : "x",
-      alter : 300,
-      step : 10
+      attr  : "o",
+      target : 100,
+      step : 5
     });
   })
 };
