@@ -66,14 +66,16 @@ function getInner(){
 }
 
 
-function getStyle(element, attr){
-  if(typeof window.getComputedStyle != 'undefined'){  // w3c
-    return window.getComputedStyle(element,null)[attr]
-  }else if(typeof element.currentStyle != "undefined"){ //IE
-    return element.currentStyle[attr]
+//跨浏览器获取Style
+function getStyle(element, attr) {
+  var value;
+  if (typeof window.getComputedStyle != 'undefined') {//W3C
+    value = parseInt(window.getComputedStyle(element, null)[attr]);
+  } else if (typeof element.currentStyle != 'undeinfed') {//IE
+    value = parseInt(element.currentStyle[attr]);
   }
+  return value;
 }
-
 
 //获取Event对象
 function getEvent(event) {

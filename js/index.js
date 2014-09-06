@@ -27,4 +27,12 @@ window.onload = function () {
   login.drag([$('h2').getElement(0)])
 
   $("h2 span").css("color", "red")
+
+  $("#boxinput").click(function(){
+    $("#box").animate({
+      attr  : "x",
+      alter : 300,
+      step : 10
+    });
+  })
 };
