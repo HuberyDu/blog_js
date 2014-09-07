@@ -299,78 +299,106 @@ Base.prototype.last = function() {
 }
 
 //设置动画
-Base.prototype.animate = function(obj) {
-  for (var i = 0; i < this.elements.length; i++) {
+//设置动画
+Base.prototype.animate = function (obj) {
+  for (var i = 0; i < this.elements.length; i ++) {
     var element = this.elements[i];
-    var attr    = obj['attr'] == 'x' ? 'left' : obj['attr'] == 'y' ? 'top' :
-      obj['attr'] == 'w' ? 'width' : obj['attr'] == 'h' ? 'height' :
-      obj['attr'] == 'o' ? 'opacity' : 'left';
+    var attr = obj['attr'] == 'x' ? 'left' : obj['attr'] == 'y' ? 'top' : 
+             obj['attr'] == 'w' ? 'width' : obj['attr'] == 'h' ? 'height' : 
+             obj['attr'] == 'o' ? 'opacity' : obj['attr'] != undefined ? obj['attr'] : 'left';
 
-    var start = obj['start'] != undefined ? obj['start'] : getStyle(element, attr); //可选，默认是CSS的起始位置
-    var t = obj['t'] != undefined ? obj['t'] : 30; //可选，默认30毫秒执行一次
-    var step = obj['step'] != undefined ? obj['step'] : 10; //可选，每次运行10像素
-
+    
+    var start = obj['start'] != undefined ? obj['start'] : 
+            attr == 'opacity' ? parseFloat(getStyle(element, attr)) * 100 : 
+                           parseInt(getStyle(element, attr));
+    
+    var t = obj['t'] != undefined ? obj['t'] : 10;                        //可选，默认10毫秒执行一次
+    var step = obj['step'] != undefined ? obj['step'] : 20;               //可选，每次运行10像素
+    
     var alter = obj['alter'];
     var target = obj['target'];
-
-    var speed = obj['speed'] != undefined ? obj['speed'] : 6; //可选，默认缓冲速度为6
-    var type = obj['type'] == 0 ? 'constant' : obj['type'] == 1 ? 'buffer' : 'buffer'; //可选，0表示匀速，1表示缓冲，默认缓冲
+    var mul = obj['mul'];
+    
+    var speed = obj['speed'] != undefined ? obj['speed'] : 6;             //可选，默认缓冲速度为6
+    var type = obj['type'] == 0 ? 'constant' : obj['type'] == 1 ? 'buffer' : 'buffer';    //可选，0表示匀速，1表示缓冲，默认缓冲
+    
+    
     if (alter != undefined && target == undefined) {
       target = alter + start;
-    } else if (alter == undefined && target == undefined) {
+    } else if (alter == undefined && target == undefined && mul == undefined) {
       throw new Error('alter增量或target目标量必须传一个！');
     }
-
-    getStyle(element, attr)
+    
+    
+    
     if (start > target) step = -step;
-    element.style[attr] = start + 'px';
-    clearInterval(window.timer);
-    timer = setInterval(function() {
 
-      if (type == 'buffer') {
-        step = attr == 'opacity' ? (target - parseFloat(getStyle(element, attr)) * 100) / speed :
-                           (target - parseInt(getStyle(element, attr))) / speed;
-        step = step > 0 ? Math.ceil(step) : Math.floor(step);
-        step = (target - getStyle(element, attr)) / speed;
-        step = step > 0 ? Math.ceil(step) : Math.floor(step);
-      }
-      if (attr == 'opacity') {
-        if (step == 0) {
-          setOpacity();
-        } else if (step > 0 && Math.abs(getStyle(element, attr) - target) <= step) {
-          setOpacity();
-        } else if (step < 0 && (getStyle(element, attr) - target) <= Math.abs(step)) {
-          setOpacity();
-        } else {
-          var temp = getStyle(element, attr) * 100;
-          element.style.opacity = parseInt(temp + step) / 100;
-          element.style.filter = 'alpha(opacity=' + parseInt(temp + step) + ')'
+    if (attr == 'opacity') {
+      element.style.opacity = parseInt(start) / 100;
+      element.style.filter = 'alpha(opacity=' + parseInt(start) +')';
+    } else {
+      element.style[attr] = start + 'px';
+    }
+
+    if (mul == undefined) {
+      mul = {};
+      mul[attr] = target;
+    }
+
+    clearInterval(element.timer);
+    element.timer = setInterval(function () {
+
+      for (var i in mul) {
+        attr = i == 'x' ? 'left' : i == 'y' ? 'top' : i == 'w' ? 'width' : i == 'h' ? 'height' : i == 'o' ? 'opacity' : i != undefined ? i : 'left';
+        target = mul[i];
+
+        if (type == 'buffer') {
+          step = attr == 'opacity' ? (target - parseFloat(getStyle(element, attr)) * 100) / speed :
+                             (target - parseInt(getStyle(element, attr))) / speed;
+          step = step > 0 ? Math.ceil(step) : Math.floor(step);
         }
-      }else {
-        if (step == 0) {
-          setTarget();
-        } else if (step > 0 && Math.abs(getStyle(element, attr) - target) <= step) {
-          setTarget();
-        } else if (step < 0 && (getStyle(element, attr) - target) <= Math.abs(step)) {
-          setTarget();
+
+        if (attr == 'opacity') {
+          if (step == 0) {
+            setOpacity();
+          } else if (step > 0 && Math.abs(parseFloat(getStyle(element, attr)) * 100 - target) <= step) {
+            setOpacity();
+          } else if (step < 0 && (parseFloat(getStyle(element, attr)) * 100 - target) <= Math.abs(step)) {
+            setOpacity();
+          } else {
+            var temp = parseFloat(getStyle(element, attr)) * 100;
+            element.style.opacity = parseInt(temp + step) / 100;
+            element.style.filter = 'alpha(opacity=' + parseInt(temp + step) + ')';
+          }
+
         } else {
-          //放在else永远不会和停止运动通知执行，就不会出现303同时剪到300的问题
-          //但是会出现不同时剪到300的问题，导致突兀
-          element.style[attr] = getStyle(element, attr) + step + 'px';
+          if (step == 0) {
+            setTarget();
+          } else if (step > 0 && Math.abs(parseInt(getStyle(element, attr)) - target) <= step) {
+            setTarget();
+          } else if (step < 0 && (parseInt(getStyle(element, attr)) - target) <= Math.abs(step)) {
+            setTarget();
+          } else {
+            element.style[attr] = parseInt(getStyle(element, attr)) + step + 'px';
+          }
         }
+
       }
+      //document.getElementById('aaa').innerHTML += step + '<br />';
     }, t);
 
-  function setTarget() {
-    element.style[attr] = target + 'px';
-    clearInterval(timer);
-  }
+    function setTarget() {
+      element.style[attr] = target + 'px';
+      clearInterval(element.timer);
+      if (obj.fn != undefined) obj.fn();
+    }
 
-  function setOpacity() {
-    element.style.filter = 'alpha(opactiy=' + target + ')';
-    element.style.opactiy = target / 100;
-    clearInterval(timer);
+    function setOpacity() {
+      element.style.opacity = parseInt(target) / 100;
+      element.style.filter = 'alpha(opacity=' + parseInt(target) + ')';
+      clearInterval(element.timer);
+      if (obj.fn != undefined) obj.fn();
+    }
   }
-}
-return this;
+  return this;
 };
