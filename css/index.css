@@ -134,7 +134,7 @@ body{
   top: 0px;
   left: 0px;
   display: none;
-  z-index: 9998
+  z-index: 9998;
 }
 #box{
   background: red;
